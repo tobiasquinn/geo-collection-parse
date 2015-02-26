@@ -21,14 +21,15 @@
   (println "Create spatial db")
   (try (db-do-commands spatialite-db
                        (create-table-ddl :locations
-                                         [:description :text]))
+                                         [:id :integer "NOT NULL PRIMARY KEY AUTOINCREMENT"]
+                                         [:description :text "NOT NULL"]))
        (catch Exception e (println e)))
   (with-db-connection [con-db spatialite-db]
     (query con-db ["SELECT load_extension('mod_spatialite')"])
     (println "Creating spatial metadata")
     (query con-db ["SELECT InitSpatialMetaData()"])
     (println "Adding geometry column")
-    (let [result (query con-db ["SELECT AddGeometryColumn('locations', 'point', 4326, 'POINT', 'XY')"])]
+    (let [result (query con-db ["SELECT AddGeometryColumn('locations', 'point', 4326, 'POINT', 'XY', 1)"])]
       (println "RESULTS:" result))))
 
 (defn save-place! [description longitude latitude]
