@@ -31,10 +31,22 @@
     (let [result (query con-db ["SELECT AddGeometryColumn('locations', 'point', 4326, 'POINT', 'XY')"])]
       (println "RESULTS:" result))))
 
+(defn save-place! [description longitude latitude]
+  (with-db-connection [con-db spatialite-db]
+    (query con-db ["SELECT load_extension('mod_spatialite')"])
+    (execute! con-db [(str "INSERT INTO locations (description, point) VALUES ('"
+                           description
+                           "', GeomFromText('POINT("
+                           longitude
+                           ","
+                           latitude
+                           ")', 4326))")])))
+
 (defn- save-to-spatialite [record]
-  (println "Should save:" record))
+  (println "Save record:" record)
+  (save-place! (:description record) (:longitude record) (:latitude record)))
 
 ;; we want to read in the records and enter then into the spatial db
 (defn convert-geo-entries! []
-  (create-spatial-db!))
-;  (doall (map save-to-spatialite (query geo-collection-db ["SELECT * FROM locations"]))))
+  (create-spatial-db!)
+  (doall (map save-to-spatialite (query geo-collection-db ["SELECT * FROM locations"]))))
