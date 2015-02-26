@@ -38,7 +38,7 @@
                            description
                            "', GeomFromText('POINT("
                            longitude
-                           ","
+                           " "
                            latitude
                            ")', 4326))")])))
 
